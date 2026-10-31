@@ -61,17 +61,24 @@ jobs:
         working-directory: esp32
         env:
           FW_VERSION: ${{ steps.version.outputs.version }}
-        run: pio run -e lilygo-t2can-fd
+        run: pio run -e lilygo-t2can-fd-spi-diag -e lilygo-t2can-fd-spi-lilygo -e lilygo-t2can-fd-spi-longan
       - name: Check stack budget
         working-directory: esp32
-        run: python3 ci_check_stack.py .pio/build/lilygo-t2can-fd
+        run: |
+          python3 ci_check_stack.py .pio/build/lilygo-t2can-fd-spi-diag
+          python3 ci_check_stack.py .pio/build/lilygo-t2can-fd-spi-lilygo
+          python3 ci_check_stack.py .pio/build/lilygo-t2can-fd-spi-longan
       - name: Stage release files
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p release
-          cp esp32/.pio/build/lilygo-t2can-fd/firmware.bin release/tesla-fsd-lilygo-t2can-fd.bin
-          cp esp32/.pio/build/lilygo-t2can-fd/firmware-merged.bin release/tesla-fsd-lilygo-t2can-fd-merged.bin
+          cp esp32/.pio/build/lilygo-t2can-fd-spi-diag/firmware.bin release/tesla-fsd-lilygo-t2can-fd.bin
+          cp esp32/.pio/build/lilygo-t2can-fd-spi-diag/firmware-merged.bin release/tesla-fsd-lilygo-t2can-fd-merged.bin
+          for provider in lilygo longan; do
+            cp esp32/.pio/build/lilygo-t2can-fd-spi-$provider/firmware-merged.bin release/tesla-fsd-lilygo-t2can-fd-$provider-merged.bin
+          done
+          cp esp32/diagnostics/README.md release/DIAGNOSTICS.md
           cp docs/install/index.html release/tesla-flasher.html
       - uses: actions/upload-artifact@v6
         with:
@@ -100,6 +107,6 @@ jobs:
           gh release create "$VERSION" release/* \
             --repo "$GITHUB_REPOSITORY" --target "$TARGET_SHA" \
             --prerelease --title "$VERSION" \
-            --notes "LilyGo T-2CAN FD USB bench diagnostics. Detailed raw SPI register snapshots, mode transitions, oscillator and RAM diagnostics, plus MCP2515 signature probing. Synthetic tests cover startup and failure paths; hardware operation remains unverified. CAN1 is not started; CAN0 is forced Listen-Only. Disconnect the vehicle and use USB power. Host tests, firmware compilation and stack checks passed."
+            --notes "Standalone LilyGO T-2CAN FD SPI diagnostics; no dashboard, WiFi, storage or TWAI. Default image tests hardware/software SPI modes 0/3, MISO pulls during reads, reset delays, configuration and RAM verification. Additional lilygo/longan images compare pinned upstream drivers in Configuration mode. See DIAGNOSTICS.md for serial commands. Disconnect the vehicle and use USB power. Hardware operation remains unverified; host tests, all three builds and stack checks passed."
           echo "### Published $VERSION" >> "$GITHUB_STEP_SUMMARY"
           echo "The pages workflow will deploy the firmware to the installer." >> "$GITHUB_STEP_SUMMARY"
