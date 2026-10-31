@@ -9,30 +9,30 @@
 #define FW_VERSION "dev"
 #endif
 // Only the board's four documented SPI pins are driven. GPIO9 is INT0, not reset.
-constexpr int CS=10, SCK=12, MOSI=11, MISO=13;
+constexpr int DIAG_CS=10, DIAG_SCK=12, DIAG_MOSI=11, DIAG_MISO=13;
 SPIClass diagnosticSPI(FSPI);
 struct Link { bool software; uint8_t mode; uint32_t hz; uint16_t guard; };
 Link active{false,0,100000,10};
 void attach(const Link &l) {
     diagnosticSPI.end();
-    digitalWrite(CS,HIGH); pinMode(CS,OUTPUT);
+    digitalWrite(DIAG_CS,HIGH); pinMode(DIAG_CS,OUTPUT);
     if(l.software) {
-        pinMode(SCK,OUTPUT); digitalWrite(SCK,l.mode==3);
-        pinMode(MOSI,OUTPUT); digitalWrite(MOSI,LOW); pinMode(MISO,INPUT);
-    } else diagnosticSPI.begin(SCK,MISO,MOSI,CS);
+        pinMode(DIAG_SCK,OUTPUT); digitalWrite(DIAG_SCK,l.mode==3);
+        pinMode(DIAG_MOSI,OUTPUT); digitalWrite(DIAG_MOSI,LOW); pinMode(DIAG_MISO,INPUT);
+    } else diagnosticSPI.begin(DIAG_SCK,DIAG_MISO,DIAG_MOSI,DIAG_CS);
 }
 uint8_t softwareByte(uint8_t tx) {
     uint8_t rx=0;
     const bool idle=active.mode==3;
     const uint32_t half=500000/active.hz;
     for(unsigned bit=0;bit<8;++bit) {
-        if(!idle) digitalWrite(MOSI,(tx & (0x80>>bit))!=0);
-        digitalWrite(SCK,!idle);
-        if(idle) digitalWrite(MOSI,(tx & (0x80>>bit))!=0);
+        if(!idle) digitalWrite(DIAG_MOSI,(tx & (0x80>>bit))!=0);
+        digitalWrite(DIAG_SCK,!idle);
+        if(idle) digitalWrite(DIAG_MOSI,(tx & (0x80>>bit))!=0);
         delayMicroseconds(half);
-        if(!idle) rx=uint8_t((rx<<1)|digitalRead(MISO));
-        digitalWrite(SCK,idle);
-        if(idle) rx=uint8_t((rx<<1)|digitalRead(MISO));
+        if(!idle) rx=uint8_t((rx<<1)|digitalRead(DIAG_MISO));
+        digitalWrite(DIAG_SCK,idle);
+        if(idle) rx=uint8_t((rx<<1)|digitalRead(DIAG_MISO));
         delayMicroseconds(half);
     }
     return rx;
@@ -40,9 +40,9 @@ uint8_t softwareByte(uint8_t tx) {
 void exchange(uint8_t *b,size_t n) {
     if(!active.software) diagnosticSPI.beginTransaction(SPISettings(active.hz,MSBFIRST,active.mode==3?SPI_MODE3:SPI_MODE0));
     delayMicroseconds(active.guard);
-    digitalWrite(CS,LOW); delayMicroseconds(active.guard);
+    digitalWrite(DIAG_CS,LOW); delayMicroseconds(active.guard);
     for(size_t i=0;i<n;++i) b[i]=active.software?softwareByte(b[i]):diagnosticSPI.transfer(b[i]);
-    delayMicroseconds(active.guard); digitalWrite(CS,HIGH);
+    delayMicroseconds(active.guard); digitalWrite(DIAG_CS,HIGH);
     delayMicroseconds(active.guard);
     if(!active.software) diagnosticSPI.endTransaction();
 }
@@ -82,11 +82,11 @@ bool verify() {
 }
 void pullRead() {
     uint32_t down[3],up[3];
-    pinMode(MISO,INPUT_PULLDOWN); delay(2);
+    pinMode(DIAG_MISO,INPUT_PULLDOWN); delay(2);
     for(auto &v:down) v=readWord(0);
-    pinMode(MISO,INPUT_PULLUP); delay(2);
+    pinMode(DIAG_MISO,INPUT_PULLUP); delay(2);
     for(auto &v:up) v=readWord(0);
-    pinMode(MISO,INPUT);
+    pinMode(DIAG_MISO,INPUT);
     Serial.printf("[PULL READ] down=%08lX/%08lX/%08lX up=%08lX/%08lX/%08lX follows-pulls=%u (suggests undriven input; not proof of chip failure)\n",(unsigned long)down[0],(unsigned long)down[1],(unsigned long)down[2],(unsigned long)up[0],(unsigned long)up[1],(unsigned long)up[2],unsigned(followsPulls(down,up)));
 }
 void suite() {
@@ -97,7 +97,7 @@ void suite() {
             if((sw && rate>50000)||(!sw && rate==50000)) continue;
             for(uint16_t guard : {uint16_t(2),uint16_t(20)}) {
                 active={sw,mode,rate,guard}; attach(active);
-                Serial.printf("[LINK] backend=%s peripheral=FSPI mode=%u hz=%lu CS-setup/hold/high=%uus pins=10/12/11/13\n",sw?"software":"hardware",unsigned(mode),(unsigned long)rate,unsigned(guard));
+                Serial.printf("[LINK] backend=%s peripheral=FSPI mode=%u hz=%lu DIAG_CS-setup/hold/high=%uus pins=10/12/11/13\n",sw?"software":"hardware",unsigned(mode),(unsigned long)rate,unsigned(guard));
                 for(unsigned wait : {10u,50u,100u}) {
                     reset(wait);
                     Serial.printf("[RESET] wait=%ums CON=%08lX OSC=%08lX\n",wait,(unsigned long)readWord(0),(unsigned long)readWord(0xE00));
@@ -117,7 +117,7 @@ void vendorComparison() {
     active={false,0,100000,20}; attach(active);
     reset(100);
     // Both upstream APIs permit Configuration mode, avoiding a transition to Normal.
-    mcp2518fd controller(CS); controller.setSPI(&diagnosticSPI);
+    mcp2518fd controller(DIAG_CS); controller.setSPI(&diagnosticSPI);
     controller.setMode(CAN_CONFIGURATION_MODE);
     Serial.printf("[VENDOR] %s starting; return code alone is not a hardware check\n",DIAG_VENDOR);
     const byte result=controller.begin(CAN20_500KBPS,MCP2518FD_40MHz);
