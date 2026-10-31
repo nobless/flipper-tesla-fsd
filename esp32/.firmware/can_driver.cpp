@@ -1004,6 +1004,53 @@ class Mcp2518FdDriver : public CanDriver {
         return after == pattern;
     }
 
+#ifdef MCP2518FD_BENCH_DIAGNOSTICS
+    // USB bench test only. Never enter a CAN operating mode or queue TX.
+    // Compare untouched GPIO9 with Battery-Emulator's T-2CAN detection setup:
+    // https://github.com/dalathegreat/Battery-Emulator/blob/main/Software/src/devboard/hal/hw_lilygo2can.h
+    void bench_spi_diagnostics() {
+        static const uint32_t speeds[] = {100000, 400000, 800000};
+        static const uint32_t patterns[] = {0xA5A5A5A5u, 0x5A5A5A5Au};
+        Serial.println("[CAN] BENCH diagnostics: disconnect vehicle; USB power only; CAN TX disabled");
+        for (uint8_t sequence = 0; sequence < 2; ++sequence) {
+            if (sequence) {
+                pinMode(9, INPUT_PULLDOWN);
+                delay(2);
+                pinMode(9, INPUT_PULLUP);
+                delay(2);
+            }
+            for (uint32_t hz : speeds) {
+                write_reg8(MCP2518FD_REG_CON + 3, MCP2518FD_CON_REQ_CONFIG, hz);
+                delay(10);
+                uint8_t reset[2] = {0, 0};
+                transfer(reset, sizeof(reset), hz);
+                delay(kOscStartMs);
+                const uint32_t con = read_reg32(MCP2518FD_REG_CON, hz);
+                const uint32_t osc = read_reg32(MCP2518FD_REG_OSC, hz);
+                const uint32_t devid = read_reg32(MCP2518FD_REG_DEVID, hz);
+                const uint32_t saved = read_reg32(0x400, hz);
+                bool pass = true;
+                for (uint32_t pattern : patterns) {
+                    write_reg32(0x400, pattern, hz);
+                    const uint32_t actual = read_reg32(0x400, hz);
+                    pass = pass && actual == pattern;
+                    Serial.printf("[CAN] BENCH gpio9=%s SPI=%lu Hz RAM wrote=0x%08lX read=0x%08lX\\n",
+                                  sequence ? "pull-sequence" : "untouched",
+                                  (unsigned long)hz, (unsigned long)pattern, (unsigned long)actual);
+                }
+                write_reg32(0x400, saved, hz);
+                Serial.printf("[CAN] BENCH gpio9=%s SPI=%lu Hz CiCON=0x%08lX OSC=0x%08lX DEVID=0x%08lX RAM=%s\\n",
+                              sequence ? "pull-sequence" : "untouched", (unsigned long)hz,
+                              (unsigned long)con, (unsigned long)osc, (unsigned long)devid,
+                              pass ? "PASS" : "FAIL");
+            }
+        }
+        // No library begin(), TX FIFO setup, or switch to Active in this build.
+        write_reg8(MCP2518FD_REG_CON + 3, MCP2518FD_CON_REQ_CONFIG, kSlowSpiHz);
+        Serial.println("[CAN] BENCH complete: can1 left in Configuration mode; reset to repeat");
+    }
+#endif
+
     // One time-base-counter sample: two reads that agree, and micros() right
     // after; a sample that took long was preempted and is thrown away.
     bool sample_tbc(uint32_t &us, uint32_t &ticks) {
@@ -1135,6 +1182,16 @@ public:
             SPI.begin(sck_pin_, miso_pin_, mosi_pin_, cs_pin_);
             spi_begun_ = true;
         }
+
+#ifdef MCP2518FD_BENCH_DIAGNOSTICS
+        static bool bench_done = false;
+        if (!bench_done) {
+            bench_done = true;
+            bench_spi_diagnostics();
+        }
+        chip_detected_ = false;
+        return false;
+#endif
 
         Mcp2518fdReadback readback = reset_chip(diag_printed_ ? &diag_ : nullptr);
         if (!verify_spi_ram()) {
