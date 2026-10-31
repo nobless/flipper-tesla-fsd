@@ -11,9 +11,15 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Beta version to publish'
+        required: true
+        default: 'v2.17-beta.5'
+        type: string
 
 permissions:
-  contents: write   # needed for the release-upload job on tags
+  contents: write   # needed to create/upload beta releases
 
 jobs:
   host-tests:
@@ -85,6 +91,8 @@ jobs:
         run: pip install --upgrade platformio
       - name: Build ${{ matrix.env }}
         working-directory: esp32
+        env:
+          FW_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || '' }}
         run: pio run -e ${{ matrix.env }}
       # Loop-task call chains vs. the loop task's stack size, from the .su
       # files the build just wrote. Fails before anything is staged or uploaded.
@@ -110,7 +118,7 @@ jobs:
   release:
     name: Attach artifacts to release
     needs: [flipper-fap, esp32-matrix]
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -131,4 +139,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${GITHUB_REF_NAME}" release/* --repo "${GITHUB_REPOSITORY}" --clobber
+          TAG="${{ inputs.release_tag || github.ref_name }}"
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "$TAG" --notes 'LilyGo T-2CAN FD MCP2518FD SPI diagnostics'
+          fi
+          gh release upload "$TAG" release/* --repo "$GITHUB_REPOSITORY" --clobber
