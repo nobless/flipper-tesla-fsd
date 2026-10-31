@@ -1251,7 +1251,10 @@ class Mcp2518FdDriver : public CanDriver {
         uint8_t rd[4] = {0x03, 0x0E, 0, 0};  // READ CANSTAT, then CANCTRL
         transfer(rd, sizeof(rd), kSlowSpiHz);
         spi_reset();
-        return mcp2515_reset_signature(rd[2], rd[3]);
+        const bool classic = mcp2515_reset_signature(rd[2], rd[3]);
+        Serial.printf("[CAN] %s MCP2515 probe CANSTAT=0x%02X CANCTRL=0x%02X signature=%s\n",
+                      label_, rd[2], rd[3], classic ? "MATCH" : "NO MATCH");
+        return classic;
     }
 
     // One line per failed attempt with what reset_chip() read back and what
@@ -1303,7 +1306,12 @@ public:
         static bool bench_done = false;
         if (!bench_done) {
             bench_done = true;
-            battery_emulator_prepare();
+            if (!battery_emulator_prepare()) {
+                const bool classic = probe_mcp2515();
+                Serial.println(classic
+                    ? "[CAN] BENCH identified MCP2515: verify classic T-2CAN board variant"
+                    : "[CAN] BENCH neither controller identified; result inconclusive, check power/SPI");
+            }
             Serial.println("[CAN] BENCH complete: Battery-Emulator bring-up tested; can1 not started");
         }
         chip_detected_ = false;
