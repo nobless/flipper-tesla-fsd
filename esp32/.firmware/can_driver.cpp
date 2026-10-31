@@ -1099,6 +1099,74 @@ class Mcp2518FdDriver : public CanDriver {
     }
 #endif
 
+    // Bring-up sequence adapted from dalathegreat/Battery-Emulator:
+    // Software/src/lib/mcp2518fd_lite/mcp2518fd_lite.cpp (reset/configure).
+    // Retain Configuration mode here; ACAN owns timing/FIFOs in normal builds.
+    bool battery_emulator_prepare() {
+        constexpr uint32_t config_hz = 1000000;
+        auto config_mode = [&]() {
+            write_reg8(MCP2518FD_REG_CON + 3, 4, config_hz);
+            for (unsigned i = 0; i <= 10; ++i) {
+                if (mcp2518fd_opmod(read_reg32(MCP2518FD_REG_CON, config_hz)) == 4)
+                    return true;
+                delay(1);
+            }
+            return false;
+        };
+        Serial.printf("[CAN] %s BE init: SPI=1 MHz, reset, OSC, RAM\n", label_);
+        // As in Battery-Emulator, attempt configuration before RESET, but
+        // judge success only after resetting and waiting 5 ms.
+        config_mode();
+        uint8_t reset[2] = {0, 0};
+        transfer(reset, sizeof(reset), config_hz);
+        delay(5);
+        if (!config_mode()) {
+            Serial.printf("[CAN] %s BE init FAIL stage=config CiCON=0x%08lX OSC=0x%08lX DEVID=0x%08lX\n",
+                          label_, (unsigned long)read_reg32(0x000, config_hz),
+                          (unsigned long)read_reg32(0xE00, config_hz),
+                          (unsigned long)read_reg32(0xE14, config_hz));
+            return false;
+        }
+        // Known board oscillator, no PLL/divide-by-two, CLKO divider 3.
+        write_reg8(0xE00, 0x60, config_hz);
+        bool ready = false;
+        for (unsigned i = 0; i < 50; ++i) {
+            if (mcp2518fd_osc_ready(read_reg32(0xE00, config_hz))) {
+                ready = true;
+                break;
+            }
+            delay(1);
+        }
+        if (!ready) {
+            Serial.printf("[CAN] %s BE init FAIL stage=oscillator\n", label_);
+            return false;
+        }
+        // Keep the existing independent crystal measurement before using the
+        // reference driver's operational SPI rate (SYSCLK * 2/5).
+        const uint32_t measured = measure_sysclk_hz();
+        if (!mcp2518fd_osc_matches(measured, MCP2518FD_OSC_HZ)) {
+            Serial.printf("[CAN] %s BE init FAIL stage=clock measured=%lu expected=%lu Hz\n",
+                          label_, (unsigned long)measured, (unsigned long)MCP2518FD_OSC_HZ);
+            return false;
+        }
+        const uint32_t operational_hz = MCP2518FD_OSC_HZ / 5 * 2;
+        const uint32_t saved = read_reg32(0x400, operational_hz);
+        write_reg32(0x400, 0xA5A5A5A5u, operational_hz);
+        const uint32_t actual = read_reg32(0x400, operational_hz);
+        write_reg32(0x400, saved, operational_hz);
+        if (actual != 0xA5A5A5A5u) {
+            Serial.printf("[CAN] %s BE init FAIL stage=RAM read=0x%08lX SPI=%lu Hz\n",
+                          label_, (unsigned long)actual, (unsigned long)operational_hz);
+            return false;
+        }
+        write_reg8(0xE07, 0x03, config_hz); // TXCAN/INT push-pull pin control
+        write_reg8(0x000, 0x60, config_hz); // PXEDIS, ISO CRC
+        write_reg32(0x040, 0, config_hz);   // disable TEF
+        write_reg32(0x050, 0, config_hz);   // disable TXQ
+        Serial.printf("[CAN] %s BE init PASS; controller remains in Configuration mode\n", label_);
+        return true;
+    }
+
     // One time-base-counter sample: two reads that agree, and micros() right
     // after; a sample that took long was preempted and is thrown away.
     bool sample_tbc(uint32_t &us, uint32_t &ticks) {
@@ -1235,12 +1303,17 @@ public:
         static bool bench_done = false;
         if (!bench_done) {
             bench_done = true;
-            bench_spi_diagnostics();
+            battery_emulator_prepare();
+            Serial.println("[CAN] BENCH complete: Battery-Emulator bring-up tested; can1 not started");
         }
         chip_detected_ = false;
         return false;
 #endif
 
+        if (!battery_emulator_prepare()) {
+            chip_detected_ = false;
+            return false;
+        }
         Mcp2518fdReadback readback = reset_chip(diag_printed_ ? &diag_ : nullptr);
         if (!verify_spi_ram()) {
             chip_detected_ = false;
