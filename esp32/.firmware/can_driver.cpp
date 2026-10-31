@@ -1059,7 +1059,7 @@ class Mcp2518FdDriver : public CanDriver {
             delay(2);
             const int high = digitalRead(pin);
             digitalWrite(pin, idle_high ? HIGH : LOW);
-            Serial.printf("[CAN] BENCH GPIO %s=%d output LOW/HIGH read=%d/%d %s\\n",
+            Serial.printf("[CAN] BENCH GPIO %s=%d output LOW/HIGH read=%d/%d %s\n",
                           name, pin, low, high,
                           (low == LOW && high == HIGH) ? "PASS (ESP32 pad only)" :
                                                           "FAIL (check GPIO/short)");
