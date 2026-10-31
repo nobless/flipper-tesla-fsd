@@ -63,6 +63,7 @@ check: test_fsd_core test_esp32_core test_can_capture_filter test_captive_probe 
 	./test_can_capture_filter
 	./test_captive_probe
 	./test_can_mcp2518fd
+	python3 test_mcp_init.py
 	./test_web_cmd
 	./test_web_origin
 	./test_can_counters
