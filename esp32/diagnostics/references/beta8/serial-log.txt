@@ -1,0 +1,51 @@
+[15:06:07]ESP-ROM:esp32s3-20210327
+[15:06:07]Build:Mar 27 2021
+[15:06:07]rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+[15:06:07]Saved PC:0x420a01c6
+[15:06:07]SPIWP:0xee
+[15:06:07]mode:DIO, clock div:1
+[15:06:07]load:0x3fce3808,len:0x4bc
+[15:06:07]load:0x403c9700,len:0xbd8
+[15:06:07]load:0x403cc700,len:0x2a0c
+[15:06:07]entry 0x403c98d0
+[15:06:07]
+[15:06:07]============================
+[15:06:07] Tesla Mod — ESP32          
+[15:06:07]============================
+[15:06:07][FSD] Version: v2.17-beta.8
+[15:06:07][FSD] Board: LilyGO T-2CAN FD
+[15:06:07][FSD] Build: Oct 31 2026 13:03:32
+[15:06:07][FSD] Loop stack: 16384 bytes
+[15:06:07][OTA] Running from: app0
+[15:06:07][CAN] Driver: LilyGO T-2CAN FD dual CAN (TWAI can0 + MCP2518FD can1, classic CAN)
+[15:06:07][CFG] pins: LED=-1 BUTTON=0 can0_TX=7 can0_RX=6 can1_CS=10 can1_SCK=12 can1_MISO=13 can1_MOSI=11
+[15:06:07][CFG] TX route: modified frames -> source bus, generated precondition -> can0
+[15:06:07][CFG] Continuous AP gear TX route: 0x229 -> bus carrying the car's 0x229, can1 first
+[15:06:07][NVS] No saved settings found (first boot)
+[15:06:07][PWR] reset: USB reset (host on the USB port)
+[15:06:07][PWR] last session: no record (first boot or cleared)
+[15:06:07][PWR] 12V feed: inconclusive - the module is on USB power
+[15:06:07][PWR] restarts since power-on: 11
+[15:06:07][BTN] Factory reset window active — hold button 5s within 20s
+[15:06:08][BB] backend=littlefs ok=1 events=5 next=6
+[15:06:08][BB] init backend=littlefs — ring allocated on enable (PSRAM target 40000 frames)
+[15:06:08][CAN] can0 TWAI Listen-Only @ 500 kbps (TX=7 RX=6)
+[15:06:08][CAN] BENCH diagnostics: disconnect vehicle; USB power only; CAN TX disabled
+[15:06:08][CAN] BENCH gpio9=untouched SPI=100000 Hz RAM wrote=0xA5A5A5A5 read=0x00000000\n[CAN] BENCH gpio9=untouched SPI=100000 Hz RAM wrote=0x5A5A5A5A read=0x00000000\n[CAN] BENCH gpio9=untouched SPI=100000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL\n[CAN] BENCH gpio9=untouched SPI=400000 Hz RAM wrote=0xA5A5A5A5 read=0x00000000\n[CAN] BENCH gpio9=untouched SPI=400000 Hz RAM wrote=0x5A5A5A5A read=0x00000000\n[CAN] BENCH gpio9=untouched SPI=400000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL\n[CAN] BENCH gpio9=untouched SPI=800000 Hz RAM wrote=0xA5A5A5A5 read=0x00000000\n[CAN] BENCH gpio9=untouched SPI=800000 Hz RAM wrote=0x5A5A5A5A read=0x00000000\n[CAN] BENCH gpio9=untouched SPI=800000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL\n[CAN] BENCH gpio9=pull-sequence SPI=100000 Hz RAM wrote=0xA5A5A5A5 read=0x00000000\n[CAN] BENCH gpio9=pull-sequence SPI=100000 Hz RAM wrote=0x5A5A5A5A read=0x00000000\n[CAN] BENCH gpio9=pull-sequence SPI=100000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL\n[CAN] BENCH gpio9=pull-sequence SPI=400000 Hz RAM wrote=0xA5A5A5A5 read=0x00000000\n[CAN] BENCH gpio9=pull-sequence SPI=400000 Hz RAM wrote=0x5A5A5A5A read=0x00000000\n[CAN] BENCH gpio9=pull-sequence SPI=400000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL\n[CAN] BENCH gpio9=pull-sequence SPI=800000 Hz RAM wrote=0xA5A5A5A5 read=0x00000000\n[CAN] BENCH gpio9=pull-sequence SPI=800000 Hz RAM wrote=0x5A5A5A5A read=0x00000000\n[CAN] BENCH gpio9=pull-sequence SPI=800000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL\n[CAN] BENCH complete: can1 left in Configuration mode; reset to repeat
+[15:06:08][CAN] 500 kbps — Listen-Only
+[15:06:08][BTN] Single click : toggle Listen-Only / Active
+[15:06:08][BTN] Long press 3s: toggle NAG Killer
+[15:06:08][BTN] Double click : toggle BMS serial output
+[15:06:08][LED] Blue=Listen  Green=Active  Yellow=OTA  Red=Error
+[15:06:08][WiFi] STA SSID not configured — starting AP
+[15:06:08][WiFi] AP: "Tesla-FSD" IP: 192.168.4.1
+[15:06:08][WiFi] Dashboard: http://192.168.4.1
+[15:06:08][WiFi] HTTP CAN stream: http://192.168.4.1:82/stream
+[15:06:08][Web] page 164223 bytes, gzip 48631 bytes
+[15:06:08][Captive] DNS catch-all → 192.168.4.1
+[15:06:08][HTTP-CAN] Stream endpoint: http://192.168.4.1:82/stream
+[15:06:08][Web] HTTP :80  WS :81 — ready
+[15:06:08][SER] Type 'ip' in the serial monitor to print WiFi URLs again
+[15:06:12][WARN] can0: no frames seen yet — check the tap wiring and that the car is awake
+[15:06:27][BTN] Factory reset window closed
+>
