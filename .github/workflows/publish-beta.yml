@@ -62,6 +62,19 @@ jobs:
         env:
           FW_VERSION: ${{ steps.version.outputs.version }}
         run: pio run -e lilygo-t2can-fd-spi-diag -e lilygo-t2can-fd-spi-lilygo -e lilygo-t2can-fd-spi-longan
+      - name: Verify embedded version in every image
+        working-directory: esp32
+        env:
+          FW_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          for name in ("diag", "lilygo", "longan"):
+              image = Path(f".pio/build/lilygo-t2can-fd-spi-{name}/firmware.bin")
+              if os.environ["FW_VERSION"].encode() + b"\\0" not in image.read_bytes():
+                  raise SystemExit(f"Missing release version in {image}")
+          PY
       - name: Check stack budget
         working-directory: esp32
         run: |
