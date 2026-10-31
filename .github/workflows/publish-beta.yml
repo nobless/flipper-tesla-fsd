@@ -1,0 +1,97 @@
+name: Publish beta
+run-name: Publish ${{ inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New beta tag, for example v2.17-beta.9'
+        required: true
+        default: v2.17-beta.9
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-beta
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate version and check tag is unused
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]] || {
+            echo "::error::Use a beta version such as v2.17-beta.9"; exit 1;
+          }
+          gh api --paginate "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/$VERSION" > tags.json
+          if jq -e --arg ref "refs/tags/$VERSION" 'any(.[]; .ref == $ref)' tags.json >/dev/null; then
+            echo "::error::Tag already exists; choose a new version"; exit 1
+          fi
+      - name: Host tests
+        run: make -C test check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            esp32/.pio
+          key: pio-lilygo-t2can-fd-${{ hashFiles('esp32/platformio.ini') }}
+      - name: Install PlatformIO
+        run: pip install platformio
+      - name: Build diagnostic firmware
+        working-directory: esp32
+        env:
+          FW_VERSION: ${{ inputs.version }}
+        run: pio run -e lilygo-t2can-fd
+      - name: Check stack budget
+        working-directory: esp32
+        run: python3 ci_check_stack.py .pio/build/lilygo-t2can-fd
+      - name: Stage release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          cp esp32/.pio/build/lilygo-t2can-fd/firmware.bin release/tesla-fsd-lilygo-t2can-fd.bin
+          cp esp32/.pio/build/lilygo-t2can-fd/firmware-merged.bin release/tesla-fsd-lilygo-t2can-fd-merged.bin
+          cp docs/install/index.html release/tesla-flasher.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beta-firmware
+          path: release/*
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: beta-firmware
+          path: release
+      - name: Create beta release with tested firmware
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          TARGET_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$VERSION" release/* \
+            --repo "$GITHUB_REPOSITORY" --target "$TARGET_SHA" \
+            --prerelease --title "$VERSION" \
+            --notes "LilyGo T-2CAN FD USB bench diagnostics. Compare hardware bulk SPI, byte SPI and software SPI. CAN1 is not started; CAN0 is forced Listen-Only. Disconnect the vehicle and use USB power. Host tests, firmware compilation and stack checks passed."
+          echo "### Published $VERSION" >> "$GITHUB_STEP_SUMMARY"
+          echo "The pages workflow will deploy the firmware to the installer." >> "$GITHUB_STEP_SUMMARY"
