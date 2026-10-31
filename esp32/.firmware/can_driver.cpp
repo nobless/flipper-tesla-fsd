@@ -1083,16 +1083,35 @@ class Mcp2518FdDriver : public CanDriver {
         }
         // Last command uses software SPI; leave the controller off the bus.
         write_reg8(MCP2518FD_REG_CON + 3, MCP2518FD_CON_REQ_CONFIG, 100000);
+        // Observe MISO with the controller both deselected and selected,
+        // without clocking it. Weak internal pulls help distinguish a
+        // floating/disconnected MISO from a line actively held low. Neither
+        // result alone can prove the chip is present or absent.
         digitalWrite(cs_pin_, HIGH);
         pinMode(miso_pin_, INPUT_PULLDOWN);
         delay(2);
-        const int low = digitalRead(miso_pin_);
+        const int idle_down = digitalRead(miso_pin_);
         pinMode(miso_pin_, INPUT_PULLUP);
         delay(2);
-        const int high = digitalRead(miso_pin_);
+        const int idle_up = digitalRead(miso_pin_);
+        digitalWrite(cs_pin_, LOW);
+        pinMode(miso_pin_, INPUT_PULLDOWN);
+        delay(2);
+        const int selected_down = digitalRead(miso_pin_);
+        pinMode(miso_pin_, INPUT_PULLUP);
+        delay(2);
+        const int selected_up = digitalRead(miso_pin_);
+        digitalWrite(cs_pin_, HIGH);
         pinMode(miso_pin_, INPUT);
-        Serial.printf("[CAN] BENCH MISO idle pulldown=%d pullup=%d (idle levels alone do not prove chip failure)\n",
-                      low, high);
+        Serial.printf("[CAN] BENCH MISO weak-pull test: CS=HIGH down/up=%d/%d; CS=LOW down/up=%d/%d\n",
+                      idle_down, idle_up, selected_down, selected_up);
+        if (idle_down == 0 && idle_up == 1 && selected_down == 0 && selected_up == 1) {
+            Serial.println("[CAN] BENCH MISO follows ESP32 pulls with either CS state (floating possible); check MCP2518FD power, soldering and GPIO13 continuity");
+        } else if (idle_down == 0 && idle_up == 0 && selected_down == 0 && selected_up == 0) {
+            Serial.println("[CAN] BENCH MISO remains LOW against weak pull-up; check GPIO13 short or unresponsive controller");
+        } else {
+            Serial.println("[CAN] BENCH MISO has a pull-dependent or driven state; compare bytewise/bitbang register readbacks above");
+        }
         SPI.begin(sck_pin_, miso_pin_, mosi_pin_, cs_pin_);
         bench_backend_ = 0;
         Serial.println("[CAN] BENCH complete: can1 not started; reset to repeat");
