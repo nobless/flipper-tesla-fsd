@@ -65,9 +65,9 @@ jobs:
       - name: Check stack budget
         working-directory: esp32
         run: |
-          python3 ci_check_stack.py .pio/build/lilygo-t2can-fd-spi-diag
-          python3 ci_check_stack.py .pio/build/lilygo-t2can-fd-spi-lilygo
-          python3 ci_check_stack.py .pio/build/lilygo-t2can-fd-spi-longan
+          python3 diagnostics/check_stack.py .pio/build/lilygo-t2can-fd-spi-diag
+          python3 diagnostics/check_stack.py .pio/build/lilygo-t2can-fd-spi-lilygo
+          python3 diagnostics/check_stack.py .pio/build/lilygo-t2can-fd-spi-longan
       - name: Stage release files
         shell: bash
         run: |
