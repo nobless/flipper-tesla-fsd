@@ -100,6 +100,6 @@ jobs:
           gh release create "$VERSION" release/* \
             --repo "$GITHUB_REPOSITORY" --target "$TARGET_SHA" \
             --prerelease --title "$VERSION" \
-            --notes "LilyGo T-2CAN FD USB bench diagnostics. Compare hardware bulk SPI, byte SPI and software SPI. CAN1 is not started; CAN0 is forced Listen-Only. Disconnect the vehicle and use USB power. Host tests, firmware compilation and stack checks passed."
+            --notes "LilyGo T-2CAN FD USB bench diagnostics. Detailed raw SPI register snapshots, mode transitions, oscillator and RAM diagnostics, plus MCP2515 signature probing. Synthetic tests cover startup and failure paths; hardware operation remains unverified. CAN1 is not started; CAN0 is forced Listen-Only. Disconnect the vehicle and use USB power. Host tests, firmware compilation and stack checks passed."
           echo "### Published $VERSION" >> "$GITHUB_STEP_SUMMARY"
           echo "The pages workflow will deploy the firmware to the installer." >> "$GITHUB_STEP_SUMMARY"
