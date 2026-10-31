@@ -1,7 +1,10 @@
 name: Publish beta
-run-name: Publish ${{ inputs.version }}
+run-name: Publish ${{ inputs.version || 'requested beta' }}
 
 on:
+  push:
+    branches: [main]
+    paths: ['.github/beta-release-version']
   workflow_dispatch:
     inputs:
       version:
@@ -20,18 +23,23 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - name: Validate version and check tag is unused
+        id: version
         env:
           VERSION: ${{ inputs.version }}
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
+          if [ -z "$VERSION" ]; then VERSION=$(cat .github/beta-release-version); fi
           [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-beta\.[0-9]+$ ]] || {
             echo "::error::Use a beta version such as v2.17-beta.9"; exit 1;
           }
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           gh api --paginate "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/$VERSION" > tags.json
           if jq -e --arg ref "refs/tags/$VERSION" 'any(.[]; .ref == $ref)' tags.json >/dev/null; then
             echo "::error::Tag already exists; choose a new version"; exit 1
@@ -52,7 +60,7 @@ jobs:
       - name: Build diagnostic firmware
         working-directory: esp32
         env:
-          FW_VERSION: ${{ inputs.version }}
+          FW_VERSION: ${{ steps.version.outputs.version }}
         run: pio run -e lilygo-t2can-fd
       - name: Check stack budget
         working-directory: esp32
@@ -84,7 +92,7 @@ jobs:
       - name: Create beta release with tested firmware
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ needs.build.outputs.version }}
           TARGET_SHA: ${{ github.sha }}
         shell: bash
         run: |
