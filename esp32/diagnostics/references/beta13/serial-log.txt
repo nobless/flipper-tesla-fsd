@@ -1,0 +1,160 @@
+[15:57:25]ESP-ROM:esp32s3-20210327
+[15:57:25]Build:Mar 27 2021
+[15:57:25]rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+[15:57:25]Saved PC:0x420a0a6e
+[15:57:25]SPIWP:0xee
+[15:57:25]mode:DIO, clock div:1
+[15:57:25]load:0x3fce3808,len:0x4bc
+[15:57:25]load:0x403c9700,len:0xbd8
+[15:57:25]load:0x403cc700,len:0x2a0c
+[15:57:25]entry 0x403c98d0
+[15:57:26]
+[15:57:26]============================
+[15:57:26] Tesla Mod — ESP32          
+[15:57:26]============================
+[15:57:26][FSD] Version: v2.17-beta.13
+[15:57:26][FSD] Board: LilyGO T-2CAN FD
+[15:57:26][FSD] Build: Oct 31 2026 13:55:45
+[15:57:26][FSD] Loop stack: 16384 bytes
+[15:57:26][OTA] Running from: app0
+[15:57:26][CAN] Driver: LilyGO T-2CAN FD dual CAN (TWAI can0 + MCP2518FD can1, classic CAN)
+[15:57:26][CFG] pins: LED=-1 BUTTON=0 can0_TX=7 can0_RX=6 can1_CS=10 can1_SCK=12 can1_MISO=13 can1_MOSI=11
+[15:57:26][CFG] TX route: modified frames -> source bus, generated precondition -> can0
+[15:57:26][CFG] Continuous AP gear TX route: 0x229 -> bus carrying the car's 0x229, can1 first
+[15:57:26][NVS] No saved settings found (first boot)
+[15:57:26][PWR] reset: USB reset (host on the USB port)
+[15:57:26][PWR] last session: no record (first boot or cleared)
+[15:57:26][PWR] 12V feed: inconclusive - the module is on USB power
+[15:57:26][PWR] restarts since power-on: 21
+[15:57:26][BTN] Factory reset window active — hold button 5s within 20s
+[15:57:26][BB] backend=littlefs ok=1 events=5 next=6
+[15:57:26][BB] init backend=littlefs — ring allocated on enable (PSRAM target 40000 frames)
+[15:57:26][CAN] can0 TWAI Listen-Only @ 500 kbps (TX=7 RX=6)
+[15:57:26][CAN] INIT snapshot=before-reset CS=10 SCK=12 MOSI=11 MISO=13 levels=1/0/1/0
+[15:57:26][CAN] INIT SPI=100000 reg=CiCON addr=000 TX=30 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=CiNBTCFG addr=004 TX=30 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=CiDBTCFG addr=008 TX=30 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=OSC addr=E00 TX=3E 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=IOCON addr=E04 TX=3E 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=CRC addr=E08 TX=3E 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=ECCCON addr=E0C TX=3E 0C 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=ECCSTAT addr=E10 TX=3E 10 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=DEVID addr=E14 TX=3E 14 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CiCON addr=000 TX=30 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CiNBTCFG addr=004 TX=30 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CiDBTCFG addr=008 TX=30 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=OSC addr=E00 TX=3E 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=IOCON addr=E04 TX=3E 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CRC addr=E08 TX=3E 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=ECCCON addr=E0C TX=3E 0C 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=ECCSTAT addr=E10 TX=3E 10 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=DEVID addr=E14 TX=3E 14 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CiCON addr=000 TX=30 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CiNBTCFG addr=004 TX=30 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CiDBTCFG addr=008 TX=30 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=OSC addr=E00 TX=3E 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=IOCON addr=E04 TX=3E 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CRC addr=E08 TX=3E 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=ECCCON addr=E0C TX=3E 0C 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=ECCSTAT addr=E10 TX=3E 10 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=DEVID addr=E14 TX=3E 14 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI mode=0 MSB-first; RX bytes 0-1 are undefined command-phase data; bytes 2-5 are little-endian register data
+[15:57:26][CAN] INIT raw register names assume MCP2518FD; no identity inferred from zeros
+[15:57:26][CAN] can1 BE init: SPI=1 MHz, reset, OSC, RAM
+[15:57:26][CAN] INIT config poll=0 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=1 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=2 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=3 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=4 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=5 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=6 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=7 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=8 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=9 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=10 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT before-reset config=unconfirmed; issuing SPI RESET 00 00, wait 5 ms
+[15:57:26][CAN] INIT config poll=0 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=1 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=2 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=3 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=4 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=5 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=6 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=7 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=8 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=9 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] INIT config poll=10 CiCON=0x00000000 OPMOD=0 valid_word=0
+[15:57:26][CAN] can1 BE init FAIL stage=config CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000
+[15:57:26][CAN] can1 MCP2515 probe CANSTAT=0x00 CANCTRL=0x00 signature=NO MATCH
+[15:57:26][CAN] BENCH neither controller identified; result inconclusive, check power/SPI
+[15:57:26][CAN] INIT snapshot=after-probes CS=10 SCK=12 MOSI=11 MISO=13 levels=1/0/0/0
+[15:57:26][CAN] INIT SPI=100000 reg=CiCON addr=000 TX=30 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=CiNBTCFG addr=004 TX=30 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=CiDBTCFG addr=008 TX=30 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=OSC addr=E00 TX=3E 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=IOCON addr=E04 TX=3E 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=CRC addr=E08 TX=3E 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=ECCCON addr=E0C TX=3E 0C 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=ECCSTAT addr=E10 TX=3E 10 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=100000 reg=DEVID addr=E14 TX=3E 14 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CiCON addr=000 TX=30 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CiNBTCFG addr=004 TX=30 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CiDBTCFG addr=008 TX=30 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=OSC addr=E00 TX=3E 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=IOCON addr=E04 TX=3E 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=CRC addr=E08 TX=3E 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=ECCCON addr=E0C TX=3E 0C 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=ECCSTAT addr=E10 TX=3E 10 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=400000 reg=DEVID addr=E14 TX=3E 14 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CiCON addr=000 TX=30 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CiNBTCFG addr=004 TX=30 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CiDBTCFG addr=008 TX=30 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=OSC addr=E00 TX=3E 00 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=IOCON addr=E04 TX=3E 04 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=CRC addr=E08 TX=3E 08 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=ECCCON addr=E0C TX=3E 0C 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=ECCSTAT addr=E10 TX=3E 10 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI=1000000 reg=DEVID addr=E14 TX=3E 14 00 00 00 00 RX=00 00 00 00 00 00 value=00000000 ALL_ZERO: inconclusive
+[15:57:26][CAN] INIT SPI mode=0 MSB-first; RX bytes 0-1 are undefined command-phase data; bytes 2-5 are little-endian register data
+[15:57:26][CAN] INIT raw register names assume MCP2518FD; no identity inferred from zeros
+[15:57:26][CAN] BENCH v2: USB only, vehicle disconnected; CAN TX disabled
+[15:57:27][CAN] BENCH backend=0 SPI=100000 Hz wrote=0xA5A5A5A5 read=0x00000000
+[15:57:27][CAN] BENCH backend=0 SPI=100000 Hz wrote=0x5A5A5A5A read=0x00000000
+[15:57:27][CAN] BENCH backend=0 SPI=100000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL
+[15:57:27][CAN] BENCH backend=0 SPI=400000 Hz wrote=0xA5A5A5A5 read=0x00000000
+[15:57:27][CAN] BENCH backend=0 SPI=400000 Hz wrote=0x5A5A5A5A read=0x00000000
+[15:57:27][CAN] BENCH backend=0 SPI=400000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL
+[15:57:27][CAN] BENCH backend=0 SPI=800000 Hz wrote=0xA5A5A5A5 read=0x00000000
+[15:57:27][CAN] BENCH backend=0 SPI=800000 Hz wrote=0x5A5A5A5A read=0x00000000
+[15:57:27][CAN] BENCH backend=0 SPI=800000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL
+[15:57:27][CAN] BENCH backend=1 SPI=100000 Hz wrote=0xA5A5A5A5 read=0x00000000
+[15:57:27][CAN] BENCH backend=1 SPI=100000 Hz wrote=0x5A5A5A5A read=0x00000000
+[15:57:27][CAN] BENCH backend=1 SPI=100000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL
+[15:57:27][CAN] BENCH backend=1 SPI=400000 Hz wrote=0xA5A5A5A5 read=0x00000000
+[15:57:27][CAN] BENCH backend=1 SPI=400000 Hz wrote=0x5A5A5A5A read=0x00000000
+[15:57:27][CAN] BENCH backend=1 SPI=400000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL
+[15:57:27][CAN] BENCH backend=1 SPI=800000 Hz wrote=0xA5A5A5A5 read=0x00000000
+[15:57:27][CAN] BENCH backend=1 SPI=800000 Hz wrote=0x5A5A5A5A read=0x00000000
+[15:57:27][CAN] BENCH backend=1 SPI=800000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL
+[15:57:27][CAN] BENCH backend=2 SPI=100000 Hz wrote=0xA5A5A5A5 read=0x00000000
+[15:57:27][CAN] BENCH backend=2 SPI=100000 Hz wrote=0x5A5A5A5A read=0x00000000
+[15:57:27][CAN] BENCH backend=2 SPI=100000 Hz CiCON=0x00000000 OSC=0x00000000 DEVID=0x00000000 RAM=FAIL
+[15:57:27][CAN] BENCH MISO weak-pull test: CS=HIGH down/up=0/1; CS=LOW down/up=0/1
+[15:57:27][CAN] BENCH MISO follows ESP32 pulls with either CS state (floating possible); check MCP2518FD power, soldering and GPIO13 continuity
+[15:57:27][CAN] BENCH complete: can1 not started; reset to repeat
+[15:57:27][CAN] BENCH complete: USB-only diagnostic build; can1 not started
+[15:57:27][CAN] 500 kbps — Listen-Only
+[15:57:27][BTN] Single click : toggle Listen-Only / Active
+[15:57:27][BTN] Long press 3s: toggle NAG Killer
+[15:57:27][BTN] Double click : toggle BMS serial output
+[15:57:27][LED] Blue=Listen  Green=Active  Yellow=OTA  Red=Error
+[15:57:27][WiFi] STA SSID not configured — starting AP
+[15:57:27][WiFi] AP: "Tesla-FSD" IP: 192.168.4.1
+[15:57:27][WiFi] Dashboard: http://192.168.4.1
+[15:57:27][WiFi] HTTP CAN stream: http://192.168.4.1:82/stream
+[15:57:27][Web] page 164223 bytes, gzip 48631 bytes
+[15:57:27][Captive] DNS catch-all → 192.168.4.1
+[15:57:27][HTTP-CAN] Stream endpoint: http://192.168.4.1:82/stream
+[15:57:27][Web] HTTP :80  WS :81 — ready
+[15:57:27][SER] Type 'ip' in the serial monitor to print WiFi URLs again
+[15:57:30][WARN] can0: no frames seen yet — check the tap wiring and that the car is awake
