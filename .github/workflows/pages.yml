@@ -36,13 +36,13 @@ jobs:
         (github.event.workflow_run.path == '.github/workflows/publish-beta.yml' &&
          (github.event.workflow_run.event == 'workflow_dispatch' ||
           github.event.workflow_run.event == 'push'))))
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
+      - uses: actions/checkout@v5
+      - uses: actions/configure-pages@v6
       - name: Build docs (Jekyll)
         uses: actions/jekyll-build-pages@v1
         with:
@@ -77,8 +77,8 @@ jobs:
           }
           publish "$STABLE" _site/firmware
           if [ "$NEWEST" != "$STABLE" ]; then publish "$NEWEST" _site/firmware/beta; fi
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: ./_site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -22,11 +22,11 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Validate version and check tag is unused
         id: version
         env:
@@ -46,10 +46,10 @@ jobs:
           fi
       - name: Host tests
         run: make -C test check
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: |
             ~/.platformio
@@ -73,7 +73,7 @@ jobs:
           cp esp32/.pio/build/lilygo-t2can-fd/firmware.bin release/tesla-fsd-lilygo-t2can-fd.bin
           cp esp32/.pio/build/lilygo-t2can-fd/firmware-merged.bin release/tesla-fsd-lilygo-t2can-fd-merged.bin
           cp docs/install/index.html release/tesla-flasher.html
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: beta-firmware
           path: release/*
@@ -81,11 +81,11 @@ jobs:
 
   release:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: beta-firmware
           path: release
