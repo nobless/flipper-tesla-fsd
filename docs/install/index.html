@@ -67,8 +67,21 @@
   <esp-web-install-button data-env="lilygo-t2can" data-chip="ESP32-S3"></esp-web-install-button>
 </div>
 <div class="board">
-  <span class="name">LilyGo T-2CAN FD (H784-A, dual CAN) <span class="chip">· ESP32-S3</span></span>
+  <span class="name">LilyGo T-2CAN FD (H784-A) — Main diagnostics <span class="chip">· ESP32-S3</span></span>
   <esp-web-install-button data-env="lilygo-t2can-fd" data-chip="ESP32-S3"></esp-web-install-button>
+</div>
+<div class="board">
+  <span class="name">LilyGo T-2CAN FD — LilyGO driver comparison <span class="chip">· ESP32-S3</span></span>
+  <esp-web-install-button data-env="lilygo-t2can-fd-lilygo" data-chip="ESP32-S3"></esp-web-install-button>
+</div>
+<div class="board">
+  <span class="name">LilyGo T-2CAN FD — Longan driver comparison <span class="chip">· ESP32-S3</span></span>
+  <esp-web-install-button data-env="lilygo-t2can-fd-longan" data-chip="ESP32-S3"></esp-web-install-button>
+</div>
+<div class="note">
+  <b>T-2CAN FD diagnostic images:</b> Start with Main diagnostics. The LilyGO and Longan images compare different drivers; install one image at a time.
+  Use USB power with the vehicle disconnected. These images use the serial console at 115200 baud and do not create a Wi-Fi dashboard.
+  Send <b>r</b> to repeat the tests, or <b>c</b> to toggle repeated reads for a logic analyzer.
 </div>
 <div class="board">
   <span class="name">Waveshare ESP32-S3-CAN <span class="chip">· ESP32-S3</span></span>
