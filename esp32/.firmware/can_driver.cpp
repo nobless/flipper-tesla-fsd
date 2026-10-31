@@ -1099,6 +1099,40 @@ class Mcp2518FdDriver : public CanDriver {
     }
 #endif
 
+#ifdef MCP2518FD_BENCH_DIAGNOSTICS
+    // Read-only bounded snapshots: never request a transmitting CAN mode.
+    // Raw bytes remain useful even when controller identity is unknown.
+    void init_debug_snapshot(const char *stage) {
+        Serial.printf("[CAN] INIT snapshot=%s CS=%d SCK=%d MOSI=%d MISO=%d levels=%d/%d/%d/%d\n",
+                      stage, cs_pin_, sck_pin_, mosi_pin_, miso_pin_,
+                      digitalRead(cs_pin_), digitalRead(sck_pin_),
+                      digitalRead(mosi_pin_), digitalRead(miso_pin_));
+        static const uint16_t addresses[] = {0x000, 0x004, 0x008, 0xE00, 0xE04, 0xE08, 0xE0C, 0xE10, 0xE14};
+        static const char *names[] = {"CiCON", "CiNBTCFG", "CiDBTCFG", "OSC", "IOCON", "CRC", "ECCCON", "ECCSTAT", "DEVID"};
+        static const uint32_t rates[] = {100000, 400000, 1000000};
+        for (uint32_t hz : rates) {
+            for (unsigned i = 0; i < sizeof(addresses) / sizeof(addresses[0]); ++i) {
+                uint8_t bytes[6] = {uint8_t(0x30 | (addresses[i] >> 8)),
+                                    uint8_t(addresses[i]), 0, 0, 0, 0};
+                const uint8_t command = bytes[0], address = bytes[1];
+                transfer(bytes, sizeof(bytes), hz);
+                const uint32_t value = uint32_t(bytes[2]) | (uint32_t(bytes[3]) << 8) |
+                    (uint32_t(bytes[4]) << 16) | (uint32_t(bytes[5]) << 24);
+                Serial.printf("[CAN] INIT SPI=%lu reg=%s addr=%03X TX=%02X %02X 00 00 00 00 RX=%02X %02X %02X %02X %02X %02X value=%08lX %s\n",
+                              (unsigned long)hz, names[i], unsigned(addresses[i]),
+                              unsigned(command), unsigned(address),
+                              unsigned(bytes[0]), unsigned(bytes[1]), unsigned(bytes[2]),
+                              unsigned(bytes[3]), unsigned(bytes[4]), unsigned(bytes[5]),
+                              (unsigned long)value,
+                              value == 0 ? "ALL_ZERO: inconclusive" :
+                              value == 0xFFFFFFFFu ? "ALL_ONE: inconclusive" : "candidate response; identity unverified");
+            }
+        }
+        Serial.println("[CAN] INIT SPI mode=0 MSB-first; RX bytes 0-1 are undefined command-phase data; bytes 2-5 are little-endian register data");
+        Serial.println("[CAN] INIT raw register names assume MCP2518FD; no identity inferred from zeros");
+    }
+#endif
+
     // Bring-up sequence adapted from dalathegreat/Battery-Emulator:
     // Software/src/lib/mcp2518fd_lite/mcp2518fd_lite.cpp (reset/configure).
     // Retain Configuration mode here; ACAN owns timing/FIFOs in normal builds.
@@ -1107,8 +1141,11 @@ class Mcp2518FdDriver : public CanDriver {
         auto config_mode = [&]() {
             write_reg8(MCP2518FD_REG_CON + 3, 4, config_hz);
             for (unsigned i = 0; i <= 10; ++i) {
-                if (mcp2518fd_opmod(read_reg32(MCP2518FD_REG_CON, config_hz)) == 4)
-                    return true;
+                const uint32_t con = read_reg32(MCP2518FD_REG_CON, config_hz);
+                Serial.printf("[CAN] INIT config poll=%u CiCON=0x%08lX OPMOD=%lu valid_word=%u\n",
+                              i, (unsigned long)con, (unsigned long)mcp2518fd_opmod(con),
+                              unsigned(!mcp2518fd_word_stuck(con)));
+                if (mcp2518fd_opmod(con) == 4) return true;
                 delay(1);
             }
             return false;
@@ -1116,7 +1153,9 @@ class Mcp2518FdDriver : public CanDriver {
         Serial.printf("[CAN] %s BE init: SPI=1 MHz, reset, OSC, RAM\n", label_);
         // As in Battery-Emulator, attempt configuration before RESET, but
         // judge success only after resetting and waiting 5 ms.
-        config_mode();
+        const bool before_reset = config_mode();
+        Serial.printf("[CAN] INIT before-reset config=%s; issuing SPI RESET 00 00, wait 5 ms\n",
+                      before_reset ? "confirmed" : "unconfirmed");
         uint8_t reset[2] = {0, 0};
         transfer(reset, sizeof(reset), config_hz);
         delay(5);
@@ -1128,10 +1167,15 @@ class Mcp2518FdDriver : public CanDriver {
             return false;
         }
         // Known board oscillator, no PLL/divide-by-two, CLKO divider 3.
+        Serial.printf("[CAN] INIT OSC write=0x60: no PLL, undivided SYSCLK, CLKO /10\n");
         write_reg8(0xE00, 0x60, config_hz);
         bool ready = false;
         for (unsigned i = 0; i < 50; ++i) {
-            if (mcp2518fd_osc_ready(read_reg32(0xE00, config_hz))) {
+            const uint32_t osc = read_reg32(0xE00, config_hz);
+            Serial.printf("[CAN] INIT OSC poll=%u value=%08lX OSCRDY=%u PLLRDY=%u SCLKRDY=%u\n",
+                          i, (unsigned long)osc, unsigned((osc >> 10) & 1),
+                          unsigned((osc >> 8) & 1), unsigned((osc >> 12) & 1));
+            if (mcp2518fd_osc_ready(osc)) {
                 ready = true;
                 break;
             }
@@ -1150,10 +1194,15 @@ class Mcp2518FdDriver : public CanDriver {
             return false;
         }
         const uint32_t operational_hz = MCP2518FD_OSC_HZ / 5 * 2;
+        Serial.printf("[CAN] INIT clock measured=%lu expected=%lu operational_SPI=%lu Hz\n",
+                      (unsigned long)measured, (unsigned long)MCP2518FD_OSC_HZ,
+                      (unsigned long)operational_hz);
         const uint32_t saved = read_reg32(0x400, operational_hz);
         write_reg32(0x400, 0xA5A5A5A5u, operational_hz);
         const uint32_t actual = read_reg32(0x400, operational_hz);
         write_reg32(0x400, saved, operational_hz);
+        Serial.printf("[CAN] INIT RAM addr=400 saved=%08lX wrote=A5A5A5A5 read=%08lX original-restoration-issued\n",
+                      (unsigned long)saved, (unsigned long)actual);
         if (actual != 0xA5A5A5A5u) {
             Serial.printf("[CAN] %s BE init FAIL stage=RAM read=0x%08lX SPI=%lu Hz\n",
                           label_, (unsigned long)actual, (unsigned long)operational_hz);
@@ -1306,12 +1355,14 @@ public:
         static bool bench_done = false;
         if (!bench_done) {
             bench_done = true;
+            init_debug_snapshot("before-reset");
             if (!battery_emulator_prepare()) {
                 const bool classic = probe_mcp2515();
                 Serial.println(classic
                     ? "[CAN] BENCH identified MCP2515: verify classic T-2CAN board variant"
                     : "[CAN] BENCH neither controller identified; result inconclusive, check power/SPI");
             }
+            init_debug_snapshot("after-probes");
             Serial.println("[CAN] BENCH complete: Battery-Emulator bring-up tested; can1 not started");
         }
         chip_detected_ = false;
