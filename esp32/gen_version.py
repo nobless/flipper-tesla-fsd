@@ -46,12 +46,13 @@ FW_VERSION = resolve_version(env.subst("$PROJECT_DIR"))
 print("[version] FW_VERSION = %s" % FW_VERSION)
 
 _SRC_DIR = os.path.realpath(env.subst("$PROJECT_SRC_DIR")) + os.sep
+_DIAG_DIR = os.path.realpath(os.path.join(env.subst("$PROJECT_DIR"), "diagnostics")) + os.sep
 
 
 def _define_version(env, node):
     # Project sources only: the version changes with every commit, and as a
     # global define it would force a rebuild of the whole Arduino core each time.
-    if not os.path.realpath(node.srcnode().get_abspath()).startswith(_SRC_DIR):
+    if not os.path.realpath(node.srcnode().get_abspath()).startswith((_SRC_DIR, _DIAG_DIR)):
         return node
     return env.Object(
         node,
