@@ -2,7 +2,7 @@
 from pathlib import Path
 import sys
 build = Path(sys.argv[1])
-files = list((build / "src").rglob("*.su"))
+files = [p for p in build.rglob("*.su") if "diagnostics" in p.parts]
 if not files:
     raise SystemExit("No project stack-usage files; refusing unchecked image")
 frames = []
