@@ -8,7 +8,7 @@ name: pages
 
 on:
   workflow_run:
-    workflows: [build]
+    workflows: [build, Publish beta]
     types: [completed]
   push:
     branches: [main]
@@ -31,8 +31,10 @@ jobs:
     if: >-
       github.event_name != 'workflow_run' ||
       (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.event == 'push' &&
-       startsWith(github.event.workflow_run.head_branch, 'v'))
+       ((github.event.workflow_run.event == 'push' &&
+         startsWith(github.event.workflow_run.head_branch, 'v')) ||
+        (github.event.workflow_run.name == 'Publish beta' &&
+         github.event.workflow_run.event == 'workflow_dispatch')))
     runs-on: ubuntu-latest
     environment:
       name: github-pages
