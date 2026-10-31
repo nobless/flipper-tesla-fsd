@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <SPI.h>
+#include <initializer_list>
 #include "probe.h"
 #ifdef DIAG_VENDOR
 #include <mcp2518fd_can.h>
