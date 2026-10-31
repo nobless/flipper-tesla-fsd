@@ -875,6 +875,9 @@ class Mcp2518FdDriver : public CanDriver {
     static constexpr uint32_t kOscStartMs     = 50;
     static constexpr uint32_t kMcp2515ResetMs = 5;
 
+#ifdef MCP2518FD_BENCH_DIAGNOSTICS
+    uint8_t bench_backend_ = 0;
+#endif
     ACAN2517FD can_;
     const char *label_;
     int      cs_pin_;
@@ -964,10 +967,38 @@ class Mcp2518FdDriver : public CanDriver {
     }
 
     void transfer(uint8_t *buf, size_t len, uint32_t hz = kRawSpiHz) {
+#ifdef MCP2518FD_BENCH_DIAGNOSTICS
+        if (bench_backend_ == 2) {
+            const uint32_t half_us = 5; // <=100 kHz including GPIO overhead
+            digitalWrite(cs_pin_, LOW);
+            for (size_t i = 0; i < len; ++i) {
+                const uint8_t tx = buf[i];
+                uint8_t rx = 0;
+                for (uint8_t bit = 0; bit < 8; ++bit) {
+                    digitalWrite(mosi_pin_, (tx & (0x80u >> bit)) ? HIGH : LOW);
+                    delayMicroseconds(half_us);
+                    digitalWrite(sck_pin_, HIGH);
+                    rx = (uint8_t)((rx << 1) | (digitalRead(miso_pin_) ? 1u : 0u));
+                    delayMicroseconds(half_us);
+                    digitalWrite(sck_pin_, LOW);
+                }
+                buf[i] = rx;
+            }
+            digitalWrite(cs_pin_, HIGH);
+            return;
+        }
+#endif
         SPI.beginTransaction(SPISettings(hz, MSBFIRST, SPI_MODE0));
         taskDISABLE_INTERRUPTS();   // same CS handling as the library
         digitalWrite((uint8_t)cs_pin_, LOW);
-        SPI.transfer(buf, len);
+#ifdef MCP2518FD_BENCH_DIAGNOSTICS
+        if (bench_backend_ == 1) {
+            for (size_t i = 0; i < len; ++i) buf[i] = SPI.transfer(buf[i]);
+        } else
+#endif
+        {
+            SPI.transfer(buf, len);
+        }
         digitalWrite((uint8_t)cs_pin_, HIGH);
         taskENABLE_INTERRUPTS();
         SPI.endTransaction();
@@ -1005,21 +1036,26 @@ class Mcp2518FdDriver : public CanDriver {
     }
 
 #ifdef MCP2518FD_BENCH_DIAGNOSTICS
-    // USB bench test only. Never enter a CAN operating mode or queue TX.
-    // Compare untouched GPIO9 with Battery-Emulator's T-2CAN detection setup:
-    // https://github.com/dalathegreat/Battery-Emulator/blob/main/Software/src/devboard/hal/hw_lilygo2can.h
+    // Mode 0: existing bulk SPI; 1: vendor-style byte SPI; 2: independent
+    // software SPI mode 0. GPIO9 is an interrupt on the FD board, not RESET.
     void bench_spi_diagnostics() {
         static const uint32_t speeds[] = {100000, 400000, 800000};
         static const uint32_t patterns[] = {0xA5A5A5A5u, 0x5A5A5A5Au};
-        Serial.println("[CAN] BENCH diagnostics: disconnect vehicle; USB power only; CAN TX disabled");
-        for (uint8_t sequence = 0; sequence < 2; ++sequence) {
-            if (sequence) {
-                pinMode(9, INPUT_PULLDOWN);
-                delay(2);
-                pinMode(9, INPUT_PULLUP);
-                delay(2);
+        Serial.println("[CAN] BENCH v2: USB only, vehicle disconnected; CAN TX disabled");
+        for (uint8_t backend = 0; backend < 3; ++backend) {
+            bench_backend_ = backend;
+            if (backend == 2) {
+                SPI.end();
+                digitalWrite(cs_pin_, HIGH);
+                pinMode(cs_pin_, OUTPUT);
+                digitalWrite(sck_pin_, LOW);
+                pinMode(sck_pin_, OUTPUT);
+                digitalWrite(mosi_pin_, LOW);
+                pinMode(mosi_pin_, OUTPUT);
+                pinMode(miso_pin_, INPUT);
             }
             for (uint32_t hz : speeds) {
+                if (backend == 2 && hz != speeds[0]) continue;
                 write_reg8(MCP2518FD_REG_CON + 3, MCP2518FD_CON_REQ_CONFIG, hz);
                 delay(10);
                 uint8_t reset[2] = {0, 0};
@@ -1034,20 +1070,32 @@ class Mcp2518FdDriver : public CanDriver {
                     write_reg32(0x400, pattern, hz);
                     const uint32_t actual = read_reg32(0x400, hz);
                     pass = pass && actual == pattern;
-                    Serial.printf("[CAN] BENCH gpio9=%s SPI=%lu Hz RAM wrote=0x%08lX read=0x%08lX\\n",
-                                  sequence ? "pull-sequence" : "untouched",
-                                  (unsigned long)hz, (unsigned long)pattern, (unsigned long)actual);
+                    Serial.printf("[CAN] BENCH backend=%u SPI=%lu Hz wrote=0x%08lX read=0x%08lX\n",
+                                  (unsigned)backend, (unsigned long)hz,
+                                  (unsigned long)pattern, (unsigned long)actual);
                 }
                 write_reg32(0x400, saved, hz);
-                Serial.printf("[CAN] BENCH gpio9=%s SPI=%lu Hz CiCON=0x%08lX OSC=0x%08lX DEVID=0x%08lX RAM=%s\\n",
-                              sequence ? "pull-sequence" : "untouched", (unsigned long)hz,
+                Serial.printf("[CAN] BENCH backend=%u SPI=%lu Hz CiCON=0x%08lX OSC=0x%08lX DEVID=0x%08lX RAM=%s\n",
+                              (unsigned)backend, (unsigned long)hz,
                               (unsigned long)con, (unsigned long)osc, (unsigned long)devid,
                               pass ? "PASS" : "FAIL");
             }
         }
-        // No library begin(), TX FIFO setup, or switch to Active in this build.
-        write_reg8(MCP2518FD_REG_CON + 3, MCP2518FD_CON_REQ_CONFIG, kSlowSpiHz);
-        Serial.println("[CAN] BENCH complete: can1 left in Configuration mode; reset to repeat");
+        // Last command uses software SPI; leave the controller off the bus.
+        write_reg8(MCP2518FD_REG_CON + 3, MCP2518FD_CON_REQ_CONFIG, 100000);
+        digitalWrite(cs_pin_, HIGH);
+        pinMode(miso_pin_, INPUT_PULLDOWN);
+        delay(2);
+        const int low = digitalRead(miso_pin_);
+        pinMode(miso_pin_, INPUT_PULLUP);
+        delay(2);
+        const int high = digitalRead(miso_pin_);
+        pinMode(miso_pin_, INPUT);
+        Serial.printf("[CAN] BENCH MISO idle pulldown=%d pullup=%d (idle levels alone do not prove chip failure)\n",
+                      low, high);
+        SPI.begin(sck_pin_, miso_pin_, mosi_pin_, cs_pin_);
+        bench_backend_ = 0;
+        Serial.println("[CAN] BENCH complete: can1 not started; reset to repeat");
     }
 #endif
 
