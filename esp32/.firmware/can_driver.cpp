@@ -1356,14 +1356,21 @@ public:
         if (!bench_done) {
             bench_done = true;
             init_debug_snapshot("before-reset");
-            if (!battery_emulator_prepare()) {
+            const bool be_ready = battery_emulator_prepare();
+            if (!be_ready) {
                 const bool classic = probe_mcp2515();
                 Serial.println(classic
                     ? "[CAN] BENCH identified MCP2515: verify classic T-2CAN board variant"
                     : "[CAN] BENCH neither controller identified; result inconclusive, check power/SPI");
+                init_debug_snapshot("after-probes");
+                // The initial snapshots exercise only bulk SPI. Compare the
+                // manufacturer's per-byte transactions and an independent
+                // bit-banged SPI implementation before blaming the hardware.
+                bench_spi_diagnostics();
+            } else {
+                Serial.println("[CAN] BENCH MCP2518FD answered via SPI; can1 is intentionally kept off the bus");
             }
-            init_debug_snapshot("after-probes");
-            Serial.println("[CAN] BENCH complete: Battery-Emulator bring-up tested; can1 not started");
+            Serial.println("[CAN] BENCH complete: USB-only diagnostic build; can1 not started");
         }
         chip_detected_ = false;
         return false;
