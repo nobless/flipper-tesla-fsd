@@ -1,0 +1,18 @@
+{
+  "lilygo": {
+    "LICENSE": "7b42931b63e2ad14c84f2a2eea771254c4af3e77",
+    "src/mcp2518fd_can.cpp": "95a7aecc59bba02a134ea0a60ef671517ef6e632",
+    "src/mcp2518fd_can.h": "29dbf9d84a6bf5ff4a60edcd06e2cf9fc69bfb63",
+    "src/mcp2518fd_can_dfs.h": "2562dc4464e24b32b179cd317b55d03b6a3be7df",
+    "src/mcp_can_fd.cpp": "0100a0409aa98f9ab3451d28002cec6365454aa0",
+    "src/mcp_can_fd.h": "f695b315309e3a98a0d196dc510a483ef4a2ab4d"
+  },
+  "longan": {
+    "LICENSE": "7b42931b63e2ad14c84f2a2eea771254c4af3e77",
+    "src/mcp2518fd_can.cpp": "d171a0bb524f6e21e9134b4f861b1872b1803889",
+    "src/mcp2518fd_can.h": "fa187f088fbd521b43d2d8eef9d02bb96b81e746",
+    "src/mcp2518fd_can_dfs.h": "154353fc27e352f835bd26cf12caa0d7c358215b",
+    "src/mcp_can_fd.cpp": "be98a7b907a2498738d58e3dfa7a64dacc31f43e",
+    "src/mcp_can_fd.h": "9502f3412e544b82602cc17ff7ede9ac6dbe8d78"
+  }
+}
