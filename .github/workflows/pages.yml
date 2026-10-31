@@ -33,7 +33,7 @@ jobs:
       (github.event.workflow_run.conclusion == 'success' &&
        ((github.event.workflow_run.event == 'push' &&
          startsWith(github.event.workflow_run.head_branch, 'v')) ||
-        (github.event.workflow_run.name == 'Publish beta' &&
+        (github.event.workflow_run.path == '.github/workflows/publish-beta.yml' &&
          (github.event.workflow_run.event == 'workflow_dispatch' ||
           github.event.workflow_run.event == 'push'))))
     runs-on: ubuntu-latest
