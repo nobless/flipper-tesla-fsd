@@ -872,7 +872,7 @@ class Mcp2518FdDriver : public CanDriver {
     static constexpr uint32_t kSlowSpiHz = 800000;
     // Bounded waits: OSCRDY after the reset, the MCP2515's oscillator start-up
     // timer after its reset (the Linux mcp251x driver's 5 ms).
-    static constexpr uint32_t kOscStartMs     = 10;
+    static constexpr uint32_t kOscStartMs     = 50;
     static constexpr uint32_t kMcp2515ResetMs = 5;
 
     ACAN2517FD can_;
@@ -980,15 +980,28 @@ class Mcp2518FdDriver : public CanDriver {
                ((uint32_t)b[5] << 24);
     }
 
-    void write_reg32(uint16_t addr, uint32_t value) {
+    void write_reg32(uint16_t addr, uint32_t value, uint32_t hz = kRawSpiHz) {
         uint8_t b[6] = {(uint8_t)(0x20 | (addr >> 8)), (uint8_t)addr, (uint8_t)value,
                         (uint8_t)(value >> 8), (uint8_t)(value >> 16), (uint8_t)(value >> 24)};
-        transfer(b, sizeof(b));
+        transfer(b, sizeof(b), hz);
     }
 
     void write_reg8(uint16_t addr, uint8_t value, uint32_t hz) {
         uint8_t b[3] = {(uint8_t)(0x20 | (addr >> 8)), (uint8_t)addr, value};
         transfer(b, sizeof(b), hz);
+    }
+
+    // Bench-only SPI verification before controller startup.
+    bool verify_spi_ram() {
+        constexpr uint16_t addr = 0x400;
+        constexpr uint32_t pattern = 0xA5A5A5A5u;
+        const uint32_t before = read_reg32(addr, kSlowSpiHz);
+        write_reg32(addr, pattern, kSlowSpiHz);
+        const uint32_t after = read_reg32(addr, kSlowSpiHz);
+        Serial.printf("[CAN] %s MCP2518FD RAM test: before=0x%08lX after=0x%08lX %s\n",
+                      label_, (unsigned long)before, (unsigned long)after,
+                      after == pattern ? "PASS" : "FAIL");
+        return after == pattern;
     }
 
     // One time-base-counter sample: two reads that agree, and micros() right
@@ -1019,6 +1032,7 @@ class Mcp2518FdDriver : public CanDriver {
     void spi_reset() {
         uint8_t b[2] = {0, 0};  // RESET: instruction 0, address 0
         transfer(b, sizeof(b), kSlowSpiHz);
+        delay(5);
     }
 
     // OSC once OSCRDY is set, or as last read when kOscStartMs runs out.
@@ -1123,6 +1137,11 @@ public:
         }
 
         Mcp2518fdReadback readback = reset_chip(diag_printed_ ? &diag_ : nullptr);
+        if (!verify_spi_ram()) {
+            chip_detected_ = false;
+            report_not_detected(ACAN2517FD::kRequestedConfigurationModeTimeOut, readback);
+            return false;
+        }
         // Probe: Listen-Only on the undivided clock. Nothing reaches the bus
         // whatever the crystal is, and the library's SPI clock for a 20 MHz
         // SYSCLK is in spec with a 20 or a 40 MHz crystal.
