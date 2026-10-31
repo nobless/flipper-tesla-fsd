@@ -1,0 +1,153 @@
+[16:30:47][RESULT] configuration=0 verified=0
+[16:30:47][LINK] backend=software peripheral=FSPI mode=3 hz=50000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:47][RESET] wait=10ms CON=00000000 OSC=00000000
+[16:30:47][RESET] wait=50ms CON=00000000 OSC=00000000
+[16:30:47][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:47][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:47][RESULT] configuration=0 verified=0
+[16:30:47][LINK] backend=software peripheral=FSPI mode=3 hz=50000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:47][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:47][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:47][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:47][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:47][RESULT] configuration=0 verified=0
+[16:30:47][DONE] 'r' repeats suite; 'c' toggles 1Hz capture reads (3E 00 + 4 data bytes). Reset repeats startup.
+[16:30:48]ESP-ROM:esp32s3-20210327
+[16:30:48]Build:Mar 27 2021
+[16:30:48]rst:0x15 (USB_UART_CHIP_RESET),boot:0x8 (SPI_FAST_FLASH_BOOT)
+[16:30:48]Saved PC:0x42022482
+[16:30:48]SPIWP:0xee
+[16:30:48]mode:DIO, clock div:1
+[16:30:48]load:0x3fce3808,len:0x4bc
+[16:30:48]load:0x403c9700,len:0xbd8
+[16:30:48]load:0x403cc700,len:0x2a0c
+[16:30:48]entry 0x403c98d0
+[16:30:50]
+[16:30:50][FSD] Version: v2.17-beta.16 standalone SPI diagnostics
+[16:30:50][BOARD] LilyGO T-2CAN FD H784-A; GPIO8/9/3 untouched; GPIO7/6 untouched
+[16:30:50][STARTUP] additional-wait=10ms CON=00000000 OSC=00000000
+[16:30:50][STARTUP] additional-wait=50ms CON=00000000 OSC=00000000
+[16:30:50][STARTUP] additional-wait=100ms CON=00000000 OSC=00000000
+[16:30:51][STARTUP] additional-wait=500ms CON=00000000 OSC=00000000
+[16:30:51][SUITE] USB bench; disconnect vehicle. No WiFi/storage/TWAI/application tasks. No CAN transmit calls.
+[16:30:51][LINK] backend=hardware peripheral=FSPI mode=0 hz=10000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:51][RESET] wait=10ms CON=00000000 OSC=00000000
+[16:30:51][RESET] wait=50ms CON=00000000 OSC=00000000
+[16:30:51][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:51][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:51][RESULT] configuration=0 verified=0
+[16:30:51][LINK] backend=hardware peripheral=FSPI mode=0 hz=10000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:51][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:51][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:51][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:51][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:52][RESULT] configuration=0 verified=0
+[16:30:52][LINK] backend=hardware peripheral=FSPI mode=0 hz=100000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:52][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:52][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:52][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:52][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:52][RESULT] configuration=0 verified=0
+[16:30:52][LINK] backend=hardware peripheral=FSPI mode=0 hz=100000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:52][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:52][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:52][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:52][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:52][RESULT] configuration=0 verified=0
+[16:30:52][LINK] backend=hardware peripheral=FSPI mode=0 hz=400000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:52][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:53][RESULT] configuration=0 verified=0
+[16:30:53][LINK] backend=hardware peripheral=FSPI mode=0 hz=400000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:53][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:53][RESULT] configuration=0 verified=0
+[16:30:53][LINK] backend=hardware peripheral=FSPI mode=3 hz=10000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:53][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:53][RESULT] configuration=0 verified=0
+[16:30:53][LINK] backend=hardware peripheral=FSPI mode=3 hz=10000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:53][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:53][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:54][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:54][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:54][RESULT] configuration=0 verified=0
+[16:30:54][LINK] backend=hardware peripheral=FSPI mode=3 hz=100000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:54][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:54][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:54][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:54][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:54][RESULT] configuration=0 verified=0
+[16:30:54][LINK] backend=hardware peripheral=FSPI mode=3 hz=100000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:54][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:54][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:54][RESET] wait=100ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:54][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:54][RESULT] configuration=0 verified=0
+[16:30:54][LINK] backend=hardware peripheral=FSPI mode=3 hz=400000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:54][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:55][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:55][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:55][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:55][RESULT] configuration=0 verified=0
+[16:30:55][LINK] backend=hardware peripheral=FSPI mode=3 hz=400000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:55][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:55][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:55][RESET] wait=100ms CON=FEFFFFFF OSC=E8FAF7ED
+[16:30:55][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:55][RESULT] configuration=0 verified=0
+[16:30:55][LINK] backend=software peripheral=FSPI mode=0 hz=10000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:55][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:55][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:55][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:55][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:56][RESULT] configuration=0 verified=0
+[16:30:56][LINK] backend=software peripheral=FSPI mode=0 hz=10000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:56][RESET] wait=10ms CON=00000000 OSC=00000000
+[16:30:56][RESET] wait=50ms CON=00000000 OSC=00000000
+[16:30:56][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:56][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:57][RESULT] configuration=0 verified=0
+[16:30:57][LINK] backend=software peripheral=FSPI mode=0 hz=50000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:57][RESET] wait=10ms CON=00000000 OSC=00000000
+[16:30:57][RESET] wait=50ms CON=00000000 OSC=00000000
+[16:30:57][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:57][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:57][RESULT] configuration=0 verified=0
+[16:30:57][LINK] backend=software peripheral=FSPI mode=0 hz=50000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:57][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:57][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:57][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:57][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:57][RESULT] configuration=0 verified=0
+[16:30:57][LINK] backend=software peripheral=FSPI mode=3 hz=10000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:57][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:58][RESET] wait=50ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:30:58][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:58][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:58][RESULT] configuration=0 verified=0
+[16:30:58][LINK] backend=software peripheral=FSPI mode=3 hz=10000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:58][RESET] wait=10ms CON=00000000 OSC=00000000
+[16:30:58][RESET] wait=50ms CON=00000000 OSC=00000000
+[16:30:58][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:59][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:59][RESULT] configuration=0 verified=0
+[16:30:59][LINK] backend=software peripheral=FSPI mode=3 hz=50000 DIAG_CS-setup/hold/high=2us pins=10/12/11/13
+[16:30:59][RESET] wait=10ms CON=00000000 OSC=00000000
+[16:30:59][RESET] wait=50ms CON=00000000 OSC=00000000
+[16:30:59][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:30:59][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:30:59][RESULT] configuration=0 verified=0
+[16:30:59][LINK] backend=software peripheral=FSPI mode=3 hz=50000 DIAG_CS-setup/hold/high=20us pins=10/12/11/13
+[16:30:59][RESET] wait=10ms CON=FFFFFFFF OSC=FFFFFFFF
+[16:31:00][RESET] wait=50ms CON=00000000 OSC=00000000
+[16:31:00][RESET] wait=100ms CON=00000000 OSC=00000000
+[16:31:00][PULL READ] down=00000000/00000000/00000000 up=FFFFFFFF/FFFFFFFF/FFFFFFFF follows-pulls=1 (suggests undriven input; not proof of chip failure)
+[16:31:00][RESULT] configuration=0 verified=0
+[16:31:00][DONE] 'r' repeats suite; 'c' toggles 1Hz capture reads (3E 00 + 4 data bytes). Reset repeats startup.

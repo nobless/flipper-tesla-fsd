@@ -35,3 +35,7 @@ command-phase data and must not be interpreted as register contents.
 
 Pinned sources and Git blob integrity checks are in vendor.py and vendor-lock.json.
 Build: pio run -e lilygo-t2can-fd-spi-diag -e lilygo-t2can-fd-spi-lilygo -e lilygo-t2can-fd-spi-longan
+
+## Field reference logs
+
+[Beta.16: three USB-only SPI captures and analysis](references/beta16/README.md) document repeated all-zero/all-one register reads, 60 failed verification combinations, and undriven MISO observations.
