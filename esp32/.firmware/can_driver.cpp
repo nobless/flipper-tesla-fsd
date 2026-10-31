@@ -1036,6 +1036,43 @@ class Mcp2518FdDriver : public CanDriver {
     }
 
 #ifdef MCP2518FD_BENCH_DIAGNOSTICS
+    // Test the ESP32-side output pads without sending any SPI commands.
+    // CS stays HIGH while SCK/MOSI change; SCK/MOSI stay LOW while CS changes.
+    // GPIO readback is only a local pin sanity check, NOT proof of continuity
+    // through the PCB to MCP2518FD, or of power at the controller.
+    void bench_gpio_output_diagnostics() {
+        SPI.end();  // detach the peripheral so GPIO readback tests the pads
+        digitalWrite(cs_pin_, HIGH);
+        pinMode(cs_pin_, OUTPUT);
+        digitalWrite(sck_pin_, LOW);
+        pinMode(sck_pin_, OUTPUT);
+        digitalWrite(mosi_pin_, LOW);
+        pinMode(mosi_pin_, OUTPUT);
+        pinMode(miso_pin_, INPUT);
+
+        auto check = [&](const char *name, int pin, bool idle_high) {
+            // Keep each state brief; no long DC drive against a possible fault.
+            digitalWrite(pin, LOW);
+            delay(2);
+            const int low = digitalRead(pin);
+            digitalWrite(pin, HIGH);
+            delay(2);
+            const int high = digitalRead(pin);
+            digitalWrite(pin, idle_high ? HIGH : LOW);
+            Serial.printf("[CAN] BENCH GPIO %s=%d output LOW/HIGH read=%d/%d %s\\n",
+                          name, pin, low, high,
+                          (low == LOW && high == HIGH) ? "PASS (ESP32 pad only)" :
+                                                          "FAIL (check GPIO/short)");
+        };
+
+        Serial.println("[CAN] BENCH GPIO output test: SPI peripheral detached; CAN TX disabled");
+        check("SCK", sck_pin_, false);    // CS is HIGH
+        check("MOSI", mosi_pin_, false);  // CS is HIGH
+        check("CS", cs_pin_, true);      // SCK/MOSI held LOW, no command clocked
+        digitalWrite(cs_pin_, HIGH);
+        SPI.begin(sck_pin_, miso_pin_, mosi_pin_, cs_pin_);
+    }
+
     // Mode 0: existing bulk SPI; 1: vendor-style byte SPI; 2: independent
     // software SPI mode 0. GPIO9 is an interrupt on the FD board, not RESET.
     void bench_spi_diagnostics() {
@@ -1374,6 +1411,7 @@ public:
         static bool bench_done = false;
         if (!bench_done) {
             bench_done = true;
+            bench_gpio_output_diagnostics();
             init_debug_snapshot("before-reset");
             const bool be_ready = battery_emulator_prepare();
             if (!be_ready) {
