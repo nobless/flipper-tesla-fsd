@@ -62,7 +62,11 @@ jobs:
           NEWEST=$(jq -r '.[0].tag_name // empty' releases.json)
           STABLE=$(jq -r '[.[] | select(.prerelease | not) | select(.tag_name | test("-(alpha|beta|rc)") | not)][0].tag_name // empty' releases.json)
           rm releases.json
-          test -n "$NEWEST"
+          # On a new fork there may be no published firmware release yet.
+          # The documentation can still deploy; a later beta release adds images.
+          if [ -z "$NEWEST" ]; then
+            echo "::notice::No release with merged firmware images yet; publishing docs only."
+          fi
           # Before the first stable release with images, the newest build is all there is.
           if [ -z "$STABLE" ]; then STABLE="$NEWEST"; fi
           publish() {
@@ -72,8 +76,10 @@ jobs:
               jq -n --arg tag "$1" '{tag: $tag, files: $ARGS.positional}' --args *-merged.bin > latest.json &&
               cat latest.json)
           }
-          publish "$STABLE" _site/firmware
-          if [ "$NEWEST" != "$STABLE" ]; then publish "$NEWEST" _site/firmware/beta; fi
+          if [ -n "$NEWEST" ]; then
+            publish "$STABLE" _site/firmware
+            if [ "$NEWEST" != "$STABLE" ]; then publish "$NEWEST" _site/firmware/beta; fi
+          fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site
