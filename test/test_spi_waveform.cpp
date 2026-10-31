@@ -16,13 +16,13 @@ int main(){
             const size_t i=bit*3;
             const int data=(0x96 & (0x80>>bit))!=0;
             if(mode==0){
-                assert(writes[i]==std::make_pair(MOSI,data));
-                assert(writes[i+1]==std::make_pair(SCK,HIGH));
-                assert(writes[i+2]==std::make_pair(SCK,LOW));
+                assert(writes[i]==std::make_pair(DIAG_MOSI,data));
+                assert(writes[i+1]==std::make_pair(DIAG_SCK,HIGH));
+                assert(writes[i+2]==std::make_pair(DIAG_SCK,LOW));
             }else{
-                assert(writes[i]==std::make_pair(SCK,LOW));
-                assert(writes[i+1]==std::make_pair(MOSI,data));
-                assert(writes[i+2]==std::make_pair(SCK,HIGH));
+                assert(writes[i]==std::make_pair(DIAG_SCK,LOW));
+                assert(writes[i+1]==std::make_pair(DIAG_MOSI,data));
+                assert(writes[i+2]==std::make_pair(DIAG_SCK,HIGH));
             }
         }
     }
