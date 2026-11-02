@@ -48,7 +48,10 @@ AsyncSpiBus implementation pinned in be-lock.json to Battery-Emulator commit
 5d4ead79f8cbaa8496df26cb61225259908dc52b. This includes the final shared-bus
 race fix from PR3077 and the driver state after PR3136. Sources are verified
 against their Git blob hashes at build time; the upstream GPLv3 license is
-retained. Only a separate Serial logging shim is supplied.
+retained. A Serial logging shim and explicit IDF 4.4 compatibility replacements are
+applied by be_vendor.py: the peripheral-claim header name, typed GPIO casts,
+and the equivalent master-start call (which applies config before starting).
+The controller initialization and PR3077 race fix are unchanged.
 
 This image owns SPI2_HOST directly, with SCK12/MOSI11/MISO13/CS10, and never
 constructs Arduino SPIClass. GPIO3/8/9 remain untouched. No interrupt pin is
