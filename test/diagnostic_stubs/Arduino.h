@@ -13,7 +13,8 @@ inline void digitalWrite(int p,int v){writes.emplace_back(p,v);}
 inline int digitalRead(int){return inputBits.at(readIndex++);}
 inline void pinMode(int,int){}
 inline void delay(unsigned){}
-inline void delayMicroseconds(unsigned){}
+extern std::vector<std::pair<size_t,unsigned>> pauses;
+inline void delayMicroseconds(unsigned us){pauses.emplace_back(writes.size(),us);}
 inline void yield(){}
 inline uint32_t millis(){return 0;}
 struct SerialStub {void begin(int){} void println(const char*){} template<class... T> void printf(const char*,T...){} bool available(){return false;} int read(){return -1;}};
