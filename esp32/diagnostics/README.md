@@ -39,3 +39,44 @@ Build: pio run -e lilygo-t2can-fd-spi-diag -e lilygo-t2can-fd-spi-lilygo -e lily
 ## Field reference logs
 
 [Beta.16: three USB-only SPI captures and analysis](references/beta16/README.md) document repeated all-zero/all-one register reads, 60 failed verification combinations, and undriven MISO observations.
+
+
+## Beta 17: independent Battery-Emulator backend
+
+The fourth installer image (`battery`) uses the complete MCP2518FD_Lite and
+AsyncSpiBus implementation pinned in be-lock.json to Battery-Emulator commit
+5d4ead79f8cbaa8496df26cb61225259908dc52b. This includes the final shared-bus
+race fix from PR3077 and the driver state after PR3136. Sources are verified
+against their Git blob hashes at build time; the upstream GPLv3 license is
+retained. Only a separate Serial logging shim is supplied.
+
+This image owns SPI2_HOST directly, with SCK12/MOSI11/MISO13/CS10, and never
+constructs Arduino SPIClass. GPIO3/8/9 remain untouched. No interrupt pin is
+attached. It first reads registers at 100k/400k/1MHz, then calls the upstream
+initialization with a 40MHz oscillator and 500k nominal/data rates, requesting
+internal loopback. No CAN frames are sent. Three matching CON reads must
+confirm mode 2; a successful begin alone is not accepted as verification.
+After success, the driver is paused in Configuration mode. Commands: `r` retry,
+`c` toggle one-second raw register snapshots. This tests initialization only;
+it does not validate physical CAN wiring, interrupts, or asynchronous traffic.
+
+### Fork review
+
+- The original driver's SPI argument order matches Arduino's SCK/MISO/MOSI/CS
+  order. Board pin assignments agree with the LilyGO FD pin configuration.
+- The application bench option deliberately leaves can1 stopped even when a
+  probe succeeds. It is not a usable vehicle CAN firmware configuration.
+- Standalone diagnostics contain no WiFi, filesystem, TWAI or Tesla logic;
+  failures there cannot be attributed to those application components.
+- Beta 17 checks the hardware SPI begin result and stops if peripheral setup
+  fails. Software mode 0 now gives MOSI an explicit setup interval before the
+  rising sampling edge. Neither change is a proven explanation for earlier
+  all-zero reads.
+- PR3136's second external controller pin fix does not directly describe this
+  board: it has one external MCP2518FD and one internal TWAI controller.
+- Host tests and compilation cannot establish that the physical MCP2518FD
+  responds. Previous zero/all-one reads and pull-following MISO results remain
+  inconclusive about the exact electrical or software cause.
+
+References: https://github.com/dalathegreat/Battery-Emulator/pull/3077 and
+https://github.com/dalathegreat/Battery-Emulator/pull/3136
