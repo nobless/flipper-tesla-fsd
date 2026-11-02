@@ -19,14 +19,19 @@ void attach(const Link &l) {
     if(l.software) {
         pinMode(DIAG_SCK,OUTPUT); digitalWrite(DIAG_SCK,l.mode==3);
         pinMode(DIAG_MOSI,OUTPUT); digitalWrite(DIAG_MOSI,LOW); pinMode(DIAG_MISO,INPUT);
-    } else diagnosticSPI.begin(DIAG_SCK,DIAG_MISO,DIAG_MOSI,DIAG_CS);
+    } else {
+        diagnosticSPI.begin(DIAG_SCK,DIAG_MISO,DIAG_MOSI,DIAG_CS);
+        const bool ok=diagnosticSPI.bus()!=nullptr;
+        Serial.printf("[SPI SETUP] FSPI explicit pins result=%u\n",unsigned(ok));
+        if(!ok) { Serial.println("[SPI FAIL] setup failed; stopped"); while(true) delay(1000); }
+    }
 }
 uint8_t softwareByte(uint8_t tx) {
     uint8_t rx=0;
     const bool idle=active.mode==3;
     const uint32_t half=500000/active.hz;
     for(unsigned bit=0;bit<8;++bit) {
-        if(!idle) digitalWrite(DIAG_MOSI,(tx & (0x80>>bit))!=0);
+        if(!idle) { digitalWrite(DIAG_MOSI,(tx & (0x80>>bit))!=0); delayMicroseconds(half); }
         digitalWrite(DIAG_SCK,!idle);
         if(idle) digitalWrite(DIAG_MOSI,(tx & (0x80>>bit))!=0);
         delayMicroseconds(half);
