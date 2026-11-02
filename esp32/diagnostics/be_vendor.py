@@ -25,6 +25,8 @@ logging.write_text('#pragma once\n#include <Arduino.h>\n#define DEBUG_PRINTF(...
 # Each replacement must match the hash-verified upstream source exactly.
 patches = {
     "src/mcp2515_lite/async_spi_bus.cpp": [
+        ('#include "hal/spi_ll.h"', '#pragma push_macro("FLAG_ATTR")\n#undef FLAG_ATTR\n#define FLAG_ATTR(type)\n#include "hal/spi_ll.h"\n#pragma pop_macro("FLAG_ATTR")'),
+        ('SPI_LL_GET_HW(host)', '(host == SPI2_HOST ? &GPSPI2 : &GPSPI3)'),
         ('#include "esp_private/spi_share_hw_ctrl.h"', '#include "driver/spi_common_internal.h"'),
         ('spi_ll_apply_config(_hw);\n  spi_ll_user_start(_hw);', 'spi_ll_master_user_start(_hw);'),
         ('gpio_ll_set_level(&GPIO, dev->cs,', 'gpio_ll_set_level(&GPIO, (gpio_num_t)dev->cs,'),
