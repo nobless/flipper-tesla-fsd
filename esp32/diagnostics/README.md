@@ -50,7 +50,9 @@ race fix from PR3077 and the driver state after PR3136. Sources are verified
 against their Git blob hashes at build time; the upstream GPLv3 license is
 retained. A Serial logging shim and explicit IDF 4.4 compatibility replacements are
 applied by be_vendor.py: the peripheral-claim header name, typed GPIO casts,
-and the equivalent master-start call (which applies config before starting).
+the equivalent master-start call (which applies config before starting), and
+workarounds for IDF 4.4 SPI header C++ incompatibilities (unused enum operators
+inside extern-C and the SPI_LL_GET_HW null branch).
 The controller initialization and PR3077 race fix are unchanged.
 
 This image owns SPI2_HOST directly, with SCK12/MOSI11/MISO13/CS10, and never
