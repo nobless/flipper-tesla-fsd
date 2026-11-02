@@ -61,7 +61,7 @@ jobs:
         working-directory: esp32
         env:
           FW_VERSION: ${{ steps.version.outputs.version }}
-        run: pio run -e lilygo-t2can-fd-spi-diag -e lilygo-t2can-fd-spi-lilygo -e lilygo-t2can-fd-spi-longan
+        run: pio run -e lilygo-t2can-fd-spi-diag -e lilygo-t2can-fd-spi-lilygo -e lilygo-t2can-fd-spi-longan -e lilygo-t2can-fd-spi-battery
       - name: Verify embedded version in every image
         working-directory: esp32
         env:
@@ -70,7 +70,7 @@ jobs:
           python3 - <<'PY'
           import os
           from pathlib import Path
-          for name in ("diag", "lilygo", "longan"):
+          for name in ("diag", "lilygo", "longan", "battery"):
               image = Path(f".pio/build/lilygo-t2can-fd-spi-{name}/firmware.bin")
               if os.environ["FW_VERSION"].encode() + bytes([0]) not in image.read_bytes():
                   raise SystemExit(f"Missing release version in {image}")
@@ -81,6 +81,7 @@ jobs:
           python3 diagnostics/check_stack.py .pio/build/lilygo-t2can-fd-spi-diag
           python3 diagnostics/check_stack.py .pio/build/lilygo-t2can-fd-spi-lilygo
           python3 diagnostics/check_stack.py .pio/build/lilygo-t2can-fd-spi-longan
+          python3 diagnostics/check_stack.py .pio/build/lilygo-t2can-fd-spi-battery
       - name: Stage release files
         shell: bash
         run: |
@@ -88,7 +89,7 @@ jobs:
           mkdir -p release
           cp esp32/.pio/build/lilygo-t2can-fd-spi-diag/firmware.bin release/tesla-fsd-lilygo-t2can-fd.bin
           cp esp32/.pio/build/lilygo-t2can-fd-spi-diag/firmware-merged.bin release/tesla-fsd-lilygo-t2can-fd-merged.bin
-          for provider in lilygo longan; do
+          for provider in lilygo longan battery; do
             cp esp32/.pio/build/lilygo-t2can-fd-spi-$provider/firmware-merged.bin release/tesla-fsd-lilygo-t2can-fd-$provider-merged.bin
           done
           cp esp32/diagnostics/README.md release/DIAGNOSTICS.md
@@ -120,6 +121,6 @@ jobs:
           gh release create "$VERSION" release/* \
             --repo "$GITHUB_REPOSITORY" --target "$TARGET_SHA" \
             --prerelease --title "$VERSION" \
-            --notes "Standalone LilyGO T-2CAN FD SPI diagnostics; no dashboard, WiFi, storage or TWAI. Default image tests hardware/software SPI modes 0/3, MISO pulls during reads, reset delays, configuration and RAM verification. Additional lilygo/longan images compare pinned upstream drivers in Configuration mode. See DIAGNOSTICS.md for serial commands. Disconnect the vehicle and use USB power. Hardware operation remains unverified; host tests, all three builds and stack checks passed."
+            --notes "Standalone LilyGO T-2CAN FD SPI diagnostics; no dashboard, WiFi, storage or TWAI. Default image tests hardware/software SPI modes 0/3, MISO pulls during reads, reset delays, configuration and RAM verification. Battery-Emulator image tests its independent SPI backend in internal-loopback without sending frames. Additional lilygo/longan images compare pinned upstream drivers in Configuration mode. See DIAGNOSTICS.md for serial commands. Disconnect the vehicle and use USB power. Hardware operation remains unverified; host tests, all four builds and stack checks passed."
           echo "### Published $VERSION" >> "$GITHUB_STEP_SUMMARY"
           echo "The pages workflow will deploy the firmware to the installer." >> "$GITHUB_STEP_SUMMARY"
